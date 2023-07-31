@@ -1,6 +1,0 @@
-flask
-flask_mail
-flask_login
-werkzeug
-mysql-connector-python
-tenacity
