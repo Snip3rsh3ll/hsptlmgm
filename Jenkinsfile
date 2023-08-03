@@ -5,7 +5,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Check out your source code from GitHub
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/Snip3rsh3ll/hsptlmgm.git', credentialsId: 'github-credentials']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/Snip3rsh3ll/hsptlmgm.git', credentialsId: 'github-credentials']]])
             }
         }
 
@@ -13,7 +13,7 @@ pipeline {
             steps {
                 catchError(buildResult: 'FAILURE') {
                     // Build Docker images using docker-compose build
-                    bat 'docker-compose build'
+                    sh 'docker-compose build'
                 }
             }
         }
@@ -32,15 +32,15 @@ pipeline {
             steps {
                 // Log in to Docker Hub with credentials from Jenkins
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    script {
-                        bat 'docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%'
-                    }
-        
-                    // Push the Docker images to Docker Hub
-                    sh 'docker-compose push'
+                script {
+                    // Use sh to pass the password securely to docker login
+                    sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                }
+            
+            // Push the Docker images to Docker Hub
+            sh 'docker-compose push'
                 }
             }
         }
-
     }
 }
