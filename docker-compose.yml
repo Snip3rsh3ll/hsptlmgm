@@ -16,7 +16,7 @@ services:
   db:
     image: mysql:5.7
     environment:
-      MYSQL_DATABASE: greg
+      MYSQL_DATABASE: mydb
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - db_data:/var/lib/mysql
